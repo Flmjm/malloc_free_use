@@ -3,59 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   ft_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mleschev <mleschev@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 12:46:21 by mleschev          #+#    #+#             */
-/*   Updated: 2025/09/22 14:50:26 by mleschev         ###   ########.fr       */
+/*   Updated: 2025/09/22 23:54:21 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-void	*ft_malloc(size_t size, int exit)
+void *ft_malloc(size_t size, int param)
 {
-	static t_list	*list = NULL;
-	void	*result;
+    static t_list **list = NULL;
+    void *result;
 
-	if (exit == 1)
-	{
-		delete_all(&list);
-		return (NULL);
-	}
-	if (!list)
-	{
-		result = malloc(size);
-		init_lst(&list, result);
-		return (result);
-	}
-	result = malloc(size);
-	make_malloc(result, &list);
-	return (result);
+    if (param == 1)
+    {
+        delete_all(list);
+        free(list);
+        list = NULL;
+        return (NULL);
+    }
+    result = malloc(size);
+    if (!result)
+        return (NULL);
+
+    if (!list)
+    {
+        list = malloc(sizeof(t_list *));
+        *list = NULL;
+        init_lst(list, result);
+    }
+    else
+        make_malloc(result, list);
+    return (result);
 }
 
-void delete_all(t_list **head)
+void *delete_all(t_list **head)
 {
-	t_list *aled;
-	t_list	*current;
-	t_list	*last;
+    t_list *current;
+    t_list *next;
 
-	aled = *head;
-	while (aled->next)
-	{
-		current = aled;
-		while (current->next)
-		{
-			if (current->next->next == NULL)
-			{
-				last = current->next;
-				current->next = NULL;
-				break ;
-			}
-			current = current->next;
-		}
-		free(last->content);
-		free(last);
-	}
-	free(aled->content);
-	free(aled);
+    current = *head;
+    while (current)
+    {
+        next = current->next;
+        free(current->content);
+        free(current);
+        current = next;
+    }
+    *head = NULL;
+    return NULL;
 }
+
